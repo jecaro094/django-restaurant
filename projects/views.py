@@ -9,4 +9,6 @@ def project_index(request):
     context = {'projects': projects}
     return render(request, 'project_index.html', context)
 
-
+def project_static(request):
+    context = {}
+    return render(request, 'project_static.html', context)
