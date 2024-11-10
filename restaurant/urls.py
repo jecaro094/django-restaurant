@@ -1,5 +1,5 @@
 """
-URL configuration for portfolio project.
+URL configuration for restaurant project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.1/topics/http/urls/
@@ -21,5 +21,4 @@ from projects import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.project_static),
-    path('index/', views.project_index),
 ]
