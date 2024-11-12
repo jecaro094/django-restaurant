@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,6 +37,12 @@ ALLOWED_HOSTS = [
     # 'django-portfolio-production-361b.up.railway.app'
 ]
 
+# OIDC settings
+keycloak_server = os.environ.get('KEYCLOAK_SERVER')
+keycloak_realm = os.environ.get('KEYCLOAK_REALM')
+keycloak_client_id = os.environ.get('CLIENT_ID')
+keycloak_secret = os.environ.get('CLIENT_SECRET')
+
 
 # Application definition
 
@@ -42,8 +53,32 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.openid_connect',
     'projects',
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+SOCIALACCOUNT_PROVIDERS = {
+    "openid_connect": {
+        "APPS": [
+            {
+                "provider_id": "keycloak",
+                "name": "Keycloak",
+                "client_id": keycloak_client_id,
+                "secret": keycloak_secret,
+                "settings": {
+                    "server_url": f"{keycloak_server}/realms/{keycloak_realm}/.well-known/openid-configuration",
+                },
+            }
+        ]
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -53,6 +88,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'restaurant.urls'
